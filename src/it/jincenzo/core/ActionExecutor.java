@@ -47,15 +47,22 @@ public class ActionExecutor {
 
 	}
 
-	public void handleTrigger(String triggerId) {
+	public ActionExecutorResult handleTrigger(String triggerId) {
 		Optional<TriggerConfig> triggerOpt = configs.getTriggers().stream()
 				.filter(t -> t.getTriggerId().equals(triggerId)).findAny();
 		if (triggerOpt.isPresent()) {
-			triggerCalled(triggerOpt.get());
+			try {
+				triggerCalled(triggerOpt.get());
+				return ActionExecutorResult.OK;
+			} catch (Exception e) {
+				return ActionExecutorResult.createErrorFeedBack(e);
+			}
+		} else {
+			return ActionExecutorResult.NOT_FOUND;
 		}
 	}
 
-	private void triggerCalled(TriggerConfig triggerConfig) {
+	private void triggerCalled(TriggerConfig triggerConfig) throws RemoveDeviceCommunicationException {
 		int lastAction = 0;
 		if (lastActionMap.containsKey(triggerConfig.getTriggerId())) {
 			lastAction = lastActionMap.get(triggerConfig.getTriggerId());
@@ -72,34 +79,21 @@ public class ActionExecutor {
 		}
 	}
 
-	private void applySet(ActionSet set) {
-
+	private void applySet(ActionSet set) throws RemoveDeviceCommunicationException {
 		for (ActionConfig action : set.getActions()) {
-			try {
-				findDeviceById(action.getDeviceId()).applyAction(action);
-			} catch (RemoveDeviceCommunicationException e) {
-				e.printStackTrace();
-			}
+			findDeviceById(action.getDeviceId()).applyAction(action);
 		}
 
 	}
 
-	private boolean isSetAlreadyApplied(ActionSet set) {
-
+	private boolean isSetAlreadyApplied(ActionSet set) throws RemoveDeviceCommunicationException {
 		for (ActionConfig action : set.getActions()) {
 			RemoteDevice device = findDeviceById(action.getDeviceId());
-			try {
-				if (!device.isCurrentActionAlreadyApplied(action)) {
-					return false;
-				}
-			} catch (RemoveDeviceCommunicationException e) {				
-				e.printStackTrace();
+			if (!device.isCurrentActionAlreadyApplied(action)) {
 				return false;
 			}
 		}
-
 		return true;
-
 	}
 
 	private RemoteDevice findDeviceById(String deviceId) {

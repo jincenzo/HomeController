@@ -1,6 +1,5 @@
 package it.jincenzo.launcher;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +14,11 @@ import it.jincenzo.configs.Configs;
 import it.jincenzo.configs.DeviceConfig;
 import it.jincenzo.configs.TriggerConfig;
 import it.jincenzo.core.ActionExecutor;
+import it.jincenzo.core.HomeControllerConstants;
 import it.jincenzo.core.remotedevice.DeviceType;
 
 public class Runner {
-	private final static String CONF_FILE = "data"+File.separatorChar+"conf"+File.separatorChar+"configurations.xml";
+	
 
 	public static void main(String[] args) throws Exception {
 		//testWriteConfig();
@@ -26,7 +26,7 @@ public class Runner {
 	}
 
 	private static void testReadConfig() throws Exception {
-		Configs configs = ConfigIO.read(CONF_FILE);
+		Configs configs = ConfigIO.read(HomeControllerConstants.DEFAULT_CONF_FILE_PATH);
 		ActionExecutor executor = new ActionExecutor(configs);
 		for(int i=0;i<10;i++) {
 			executor.handleTrigger("TRIGGER_1");
@@ -42,7 +42,7 @@ public class Runner {
 
 	private static void testWriteConfig() throws JsonGenerationException, JsonMappingException, IOException {
 		Configs test = createDefaultConfigs();
-		ConfigIO.write(test, CONF_FILE);
+		ConfigIO.write(test, HomeControllerConstants.DEFAULT_CONF_FILE_PATH);
 	}
 
 	private static Configs createDefaultConfigs() {
