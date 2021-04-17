@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -22,8 +23,11 @@ import it.jincenzo.core.HomeControllerConstants;
 
 public class WebRunner {
 
+	private static final String LONG_PRESS = "LONG_PRESS";
 	private static final String RESPONSE_MISSING_PARAMS = "MISSING_PARAMS";
 	private static final String PARAM_RELOAD_CONFIGS = "reloadConfigs";
+	private static final String PARAM_STATUS = "status";
+	private static final String PARAM_STATUS_CONFIG = "statusConfig";
 	private static final String RESPONSE_KO = "KO";
 	private static final String RESPONSE_OK = "OK";
 	private static final String PARAM_TRIGGER = "TRIGGER";
@@ -74,8 +78,9 @@ public class WebRunner {
 	}
 
 	static String handleParams(Map<String, String> params) {
+		boolean longPress = params.containsKey(LONG_PRESS+"no");
 		if(params.containsKey(PARAM_TRIGGER)) {
-			ActionExecutorResult result = EXECUTOR.handleTrigger(params.get(PARAM_TRIGGER));
+			ActionExecutorResult result = EXECUTOR.handleTrigger(params.get(PARAM_TRIGGER),longPress);
 			if(result.getFeedback().equals(ActionExecutorFeedback.TRIGGER_EXECUTED)) {
 				return RESPONSE_OK;				
 			}else
@@ -93,6 +98,17 @@ public class WebRunner {
 				e.printStackTrace();
 				return response(RESPONSE_KO,e.getMessage());
 			} 
+		}
+		if(params.containsKey(PARAM_STATUS)) {			
+			return EXECUTOR.getStatusReport();
+		}
+		if(params.containsKey(PARAM_STATUS_CONFIG)) {			
+			try {
+				return EXECUTOR.getStatusConfigReport();
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+				return response(RESPONSE_KO,e.getMessage());
+			}
 		}
 		return RESPONSE_MISSING_PARAMS;
 	}

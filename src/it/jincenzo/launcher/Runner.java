@@ -29,7 +29,7 @@ public class Runner {
 		Configs configs = ConfigIO.read(HomeControllerConstants.DEFAULT_CONF_FILE_PATH);
 		ActionExecutor executor = new ActionExecutor(configs);
 		for(int i=0;i<10;i++) {
-			executor.handleTrigger("TRIGGER_1");
+			executor.handleTrigger("TRIGGER_1",false);
 			s(1000);
 		}
 
@@ -52,7 +52,12 @@ public class Runner {
 		List<ActionSet> actionSets = new ArrayList<>();
 
 		List<ActionConfig> actions = new ArrayList<>();
-		actions.add(new ActionConfig("SOTTOMARINO", true, 100, "#71eb34"));
+		ActionConfig confg = new ActionConfig();
+		confg.setDeviceId("SOTTOMARINO");;
+		confg.setPower(true);
+		confg.setBrightness(100);
+		confg.setRgb("#71eb34");;
+		actions.add(confg);
 
 		actionSets.add(new ActionSet(actions));
 		List<TriggerConfig> triggers = new ArrayList<>();

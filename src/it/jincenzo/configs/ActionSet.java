@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class ActionSet implements Serializable {
+	private boolean longPress;
 	private List<ActionConfig> actions;
 
 	public ActionSet(List<ActionConfig> actions) {
@@ -20,6 +21,9 @@ public class ActionSet implements Serializable {
 
 	public List<ActionConfig> getActions() {
 		return actions;
+	}
+	public boolean isLongPress() {
+		return longPress;
 	}
 
 }

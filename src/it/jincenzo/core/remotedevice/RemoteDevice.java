@@ -18,4 +18,8 @@ public abstract class RemoteDevice {
 	public String getId() {
 		return deviceConfig.getId();
 	}
+
+	public abstract String statusReport();
+
+	public abstract ActionConfig getCurrentStatusAsConfig();
 }
